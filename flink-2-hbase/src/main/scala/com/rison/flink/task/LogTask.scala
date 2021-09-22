@@ -19,9 +19,8 @@ object LogTask {
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
     val properties: Properties = Property.getKafkaProperties("log")
     val dataStream: DataStreamSource[String] = env.addSource(new FlinkKafkaConsumer[String]("con", new SimpleStringSchema(), properties))
-    dataStream.map(LogMapFunction)
-
-
+    dataStream.map(LogMapFunction())
+    env.execute("log message receive")
   }
 
 }
