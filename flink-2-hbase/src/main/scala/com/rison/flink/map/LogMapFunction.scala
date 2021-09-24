@@ -16,10 +16,10 @@ case class LogMapFunction() extends MapFunction[String, LogEntity] with Logger {
     //TODO: 写入到Hbase里面去
     if (logEntity != null) {
       val rowKey: String = logEntity.userId + "_" + logEntity.productId + "_" + logEntity.time
-      HbaseClient.putData(tablename = "con", rowkey = rowKey, familyname = "log", column = "userid", logEntity.userId.toString)
-      HbaseClient.putData(tablename = "con", rowkey = rowKey, familyname = "log", column = "productid", logEntity.productId.toString)
-      HbaseClient.putData(tablename = "con", rowkey = rowKey, familyname = "log", column = "time", logEntity.time.toString)
-      HbaseClient.putData(tablename = "con", rowkey = rowKey, familyname = "log", column = "action", logEntity.action.toString)
+      HbaseClient.putData(tableName = "con", rowKey = rowKey, familyName = "log", column = "userid", logEntity.userId.toString)
+      HbaseClient.putData(tableName = "con", rowKey = rowKey, familyName = "log", column = "productid", logEntity.productId.toString)
+      HbaseClient.putData(tableName = "con", rowKey = rowKey, familyName = "log", column = "time", logEntity.time.toString)
+      HbaseClient.putData(tableName = "con", rowKey = rowKey, familyName = "log", column = "action", logEntity.action.toString)
     }
     logEntity
 

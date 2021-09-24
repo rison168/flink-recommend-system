@@ -6,8 +6,9 @@ import com.rison.flink.common.Logger
 import com.rison.flink.util.Property
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.hbase.{HBaseConfiguration, TableName}
-import org.apache.hadoop.hbase.client.{Admin, Connection, ConnectionFactory, Get, Put, Result, Table}
+import org.apache.hadoop.hbase.client.{Admin, Connection, ConnectionFactory, Get, Put, Result, ResultScanner, Scan, Table}
 import org.apache.hadoop.hbase.util.Bytes
+import scala.collection.mutable.ListBuffer
 
 /**
  * @author : Rison 2021/9/22 下午10:31
@@ -39,19 +40,19 @@ object HbaseClient extends Logger {
   /**
    * 写入数据
    *
-   * @param tablename  表名
-   * @param rowkey     行号
-   * @param familyname 列簇名
+   * @param tableName  表名
+   * @param rowKey     行号
+   * @param familyName 列簇名
    * @param column     字段
    * @param data       数据
    */
-  def putData(tablename: String, rowkey: String, familyname: String, column: String, data: String) = {
+  def putData(tableName: String, rowKey: String, familyName: String, column: String, data: String) = {
     if (conn == null) {
       init()
     }
-    val table: Table = conn.getTable(TableName.valueOf(tablename))
-    val put = new Put(rowkey.getBytes())
-    put.addColumn(familyname.getBytes(), column.getBytes(), data.getBytes())
+    val table: Table = conn.getTable(TableName.valueOf(tableName))
+    val put = new Put(rowKey.getBytes())
+    put.addColumn(familyName.getBytes(), column.getBytes(), data.getBytes())
     table.put(put)
     conn.close()
   }
@@ -59,21 +60,21 @@ object HbaseClient extends Logger {
   /**
    * 读取数据
    *
-   * @param tablename
+   * @param tableName
    * @param rowKey
-   * @param familyname
+   * @param familyName
    * @param column
    * @return
    */
-  def getData(tablename: String, rowKey: String, familyname: String, column: String): String = {
+  def getData(tableName: String, rowKey: String, familyName: String, column: String): String = {
     if (conn == null) {
       init()
     }
-    val table: Table = conn.getTable(TableName.valueOf(tablename))
+    val table: Table = conn.getTable(TableName.valueOf(tableName))
     val row: Array[Byte] = Bytes.toBytes(rowKey)
     val get = new Get(row)
     val result: Result = table.get(get)
-    val resultValue: Array[Byte] = result.getValue(familyname.getBytes(), column.getBytes())
+    val resultValue: Array[Byte] = result.getValue(familyName.getBytes(), column.getBytes())
     if (resultValue == null) null
     val str = new String(resultValue)
     conn.close()
@@ -83,22 +84,71 @@ object HbaseClient extends Logger {
   /**
    * 单元字段元素记录数据 加1
    *
-   * @param tablename  表名
-   * @param rowkey     行号
-   * @param familyname 列簇名
+   * @param tableName  表名
+   * @param rowKey     行号
+   * @param familyName 列簇名
    * @param column     列名
    */
-  def increaseColumn(tablename: String, rowkey: String, familyname: String, column: String): Unit = {
+  def increaseColumn(tableName: String, rowKey: String, familyName: String, column: String): Unit = {
     if (conn == null) {
       init()
     }
-    val str: String = getData(tablename, rowkey, familyname, column)
+    val str: String = getData(tableName, rowKey, familyName, column)
     var res: Int = 1;
-    if (str != null){
+    if (str != null) {
       res = str.toInt + 1
     }
-    putData(tablename, rowkey, familyname, column, res.toString)
+    putData(tableName, rowKey, familyName, column, res.toString)
     conn.close()
+  }
+
+  /**
+   * 取出表的所有key
+   *
+   * @param tableName
+   * @return
+   */
+  def getAllKey(tableName: String): List[String] = {
+    if (conn == null) {
+      init()
+    }
+    val keys: ListBuffer[String] = ListBuffer[String]()
+    val scan = new Scan()
+    val table: Table = conn.getTable(TableName.valueOf(tableName))
+    val scanner: ResultScanner = table.getScanner(scan)
+    scanner.forEach(
+      r => {
+        keys.append(r.getRow.toString)
+      }
+    )
+    conn.close()
+    keys.toList
+  }
+
+  /**
+   * 获取一行的所有数据 并且排序
+   * @param tableName
+   * @param rowKey
+   * @return
+   */
+  def getRow(tableName: String, rowKey: String): List[(String, Double)] = {
+    if (conn != null) {
+      init()
+    }
+    val table: Table = conn.getTable(TableName.valueOf(tableName))
+    val row: Array[Byte] = Bytes.toBytes(rowKey)
+    val get = new Get(row)
+    val result: Result = table.get(get)
+    val list = ListBuffer[(String, Double)]()
+    result.listCells().forEach(
+      cell => {
+        val key: String = Bytes.toString(cell.getQualifierArray, cell.getQualifierOffset, cell.getQualifierLength)
+        val value: String = Bytes.toString(cell.getValueArray, cell.getValueOffset, cell.getValueLength)
+        list.append((key, value.toDouble))
+      }
+    )
+    conn.close()
+    list.toList.sortWith(_._2 > _._2)
   }
 
 }

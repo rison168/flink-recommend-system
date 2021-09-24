@@ -20,13 +20,13 @@ case class UserPortraitMapFunction() extends MapFunction[String, String] {
         val userId: String = logEntity.userId.toString
         //产地
         val country: String = resultSet.getString("country")
-        HbaseClient.increaseColumn(tablename = "user", rowkey = userId, familyname = "country", country)
+        HbaseClient.increaseColumn(tableName = "user", rowKey = userId, familyName = "country", country)
         //颜色
         val color: String = resultSet.getString("color")
-        HbaseClient.increaseColumn(tablename = "user", rowkey = userId, familyname = "color", color)
+        HbaseClient.increaseColumn(tableName = "user", rowKey = userId, familyName = "color", color)
         //风格
         val style: String = resultSet.getString("style")
-        HbaseClient.increaseColumn(tablename = "user", rowkey = userId, familyname = "style", style)
+        HbaseClient.increaseColumn(tableName = "user", rowKey = userId, familyName = "style", style)
       }
     }
     null

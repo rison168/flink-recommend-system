@@ -25,7 +25,6 @@ object UserInterestTask {
     dataStream.map(GetLogMapFunction())
       .keyBy("userId")
       .map(UserHistoryWithInterestMapFunction())
-
     env.execute("user product interest task")
   }
 }

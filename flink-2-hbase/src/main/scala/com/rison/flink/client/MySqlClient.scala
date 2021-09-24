@@ -40,7 +40,7 @@ object MySqlClient extends Logger {
     if (stmt == null) {
       init()
     }
-    val sql: String = String.format("select * from user where user_id = %s", userId)
+    val sql: String = String.format("select * from user where user_id = %s", userId.toString)
     val resultSet: ResultSet = stmt.executeQuery(sql)
     connection.close()
     stmt.close()
@@ -57,7 +57,7 @@ object MySqlClient extends Logger {
     if (stmt == null) {
       init()
     }
-    val sql: String = String.format("select * from product where product_id = %S", productId)
+    val sql: String = String.format("select * from product where product_id = %S", productId.toString)
     val resultSet: ResultSet = stmt.executeQuery(sql)
     connection.close()
     stmt.close()

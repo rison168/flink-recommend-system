@@ -13,8 +13,8 @@ case class UserHistoryMapFunction() extends MapFunction[String, String] {
   override def map(log: String): String = {
     val logEntity: LogEntity = LogToEntity.getLogEntity(log)
     if (logEntity != null) {
-      HbaseClient.increaseColumn(tablename = "u_history", logEntity.userId.toString, "p", logEntity.productId.toString)
-      HbaseClient.increaseColumn(tablename = "p_history", logEntity.productId.toString, "p", logEntity.userId.toString)
+      HbaseClient.increaseColumn(tableName = "u_history", logEntity.userId.toString, "p", logEntity.productId.toString)
+      HbaseClient.increaseColumn(tableName = "p_history", logEntity.productId.toString, "p", logEntity.userId.toString)
     }
     null
   }

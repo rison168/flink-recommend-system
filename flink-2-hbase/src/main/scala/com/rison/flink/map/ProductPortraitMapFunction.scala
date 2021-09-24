@@ -21,8 +21,8 @@ case class ProductPortraitMapFunction() extends MapFunction[String, String] {
         val sex: String = resultSet.getString("sex")
         val age: String = resultSet.getString("age")
         //TODO: 写入到Hbase,sex列簇的字段（woman,man）/age列簇的字段(0s,10s,20s,30s,40s,50s,60s)次数单调递增
-        HbaseClient.increaseColumn(tablename = "prod", rowkey = productId, familyname = "sex", sex)
-        HbaseClient.increaseColumn(tablename = "prod", rowkey = productId, familyname = "age", AgeType.getAageType(age.toInt))
+        HbaseClient.increaseColumn(tableName = "prod", rowKey = productId, familyName = "sex", sex)
+        HbaseClient.increaseColumn(tableName = "prod", rowKey = productId, familyName = "age", AgeType.getAageType(age.toInt))
       }
     }
     null
