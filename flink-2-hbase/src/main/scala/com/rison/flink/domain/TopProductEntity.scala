@@ -20,9 +20,8 @@ class TopProductEntity() extends Serializable {
 }
 
 object TopProductEntity {
-  def apply(): TopProductEntity = {
-    new TopProductEntity()
-  }
+
+  def apply(): TopProductEntity = new TopProductEntity()
 
   def of(itemId: Int, end: Long, count: Long): TopProductEntity = {
     val entity: TopProductEntity = TopProductEntity()
