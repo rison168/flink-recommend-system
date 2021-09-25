@@ -23,6 +23,13 @@ object TopProductEntity {
 
   def apply(): TopProductEntity = new TopProductEntity()
 
+  def apply(productId: Int, rankName: String): TopProductEntity = {
+    val entity = new TopProductEntity()
+    entity.productId = productId
+    entity.rankName = rankName
+    entity
+  }
+
   def of(itemId: Int, end: Long, count: Long): TopProductEntity = {
     val entity: TopProductEntity = TopProductEntity()
     entity.actionTimes = count.toInt

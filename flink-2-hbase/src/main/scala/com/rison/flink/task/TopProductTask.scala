@@ -52,13 +52,10 @@ object TopProductTask {
       .keyBy(_.windowEnd)
       .process(TopNHotItem(topSize))
       .flatMap {
-        (productIdList: List[String], out: Collector[TopProductEntity]) =>
-          productIdList.foreach(
+        (list, out: Collector[TopProductEntity]) =>
+          list.foreach(
             pid => {
-              val entity: TopProductEntity = TopProductEntity()
-              entity.rankName = pid
-              entity.productId = pid.toInt
-              out.collect(entity)
+              out.collect(TopProductEntity(pid.toInt, pid))
             }
           )
       }
@@ -67,7 +64,4 @@ object TopProductTask {
     env.execute("hot topN task")
 
   }
-
-  object windowFunction
-
 }
