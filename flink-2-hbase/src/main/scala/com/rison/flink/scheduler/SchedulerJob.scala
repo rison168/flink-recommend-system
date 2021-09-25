@@ -26,6 +26,7 @@ object SchedulerJob extends Logger {
     val productIdList: List[String] = HbaseClient.getAllKey("p_history")
     for (id <- productIdList) {
       ItemCF.getSingleItemCF(id, productIdList)
+      ProductCos.getSingleProductCos(id, productIdList)
     }
     logger.info("===============定时任务结束=========================")
   }
